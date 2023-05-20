@@ -13,18 +13,24 @@
     <link rel="stylesheet" href="./sass/index.scss" />
   </head>
   <body>
-    <div class="container" data-bs-theme="light">
-      <nav class="navbar navbar-expand-lg bg-body-tertiary bg-primary-subtle">
+    <div class="container text-center" data-bs-theme="light">
+      <nav class="navbar navbar-expand-lg bg-primary-subtle">
         <!-- <div class="container-fluid"> -->
         <div
           class="collapse navbar-collapse justify-content-center"
           id="navbarSupportedContent"
         >
-          <form class="d-flex col-md-4" role="search">
+          <form
+            class="d-flex col-md-4 search-form"
+            role="search"
+            id="search-form"
+          >
             <input
               class="form-control me-2"
-              type="search"
-              placeholder="Search"
+              type="text"
+              name="searchQuery"
+              autocomplete="off"
+              placeholder="Search images..."
               aria-label="Search"
             />
             <button class="btn btn-outline-secondary" type="submit">
@@ -34,24 +40,33 @@
         </div>
         <!-- </div> -->
       </nav>
-      <!-- <form class="search-form" id="search-form">
-        <input
-          type="text"
-          name="searchQuery"
-          autocomplete="off"
-          placeholder="Search images..."
-        />
-        <button type="submit">Search</button>
-      </form> -->
-      <div class="gallery">
+
+      <!-- <div class="gallery d-md-flex justify-content-md-center"> -->
+      <div class="gallery row row-cols-4">
         <!-- Карточки изображений -->
+
+        <!-- <div class="grid text-center">
+          <div class="g-col-6 g-col-md-4">.g-col-6 .g-col-md-4</div>
+          <div class="g-col-6 g-col-md-4">.g-col-6 .g-col-md-4</div>
+          <div class="g-col-6 g-col-md-4">.g-col-6 .g-col-md-4</div>
+        </div> -->
+
+        <!-- 
+        <div class="col">Column</div>
+        <div class="col">Column</div>
+        <div class="col">Column</div>
+        <div class="col">Column</div> -->
+      </div>
+
+      <div class="row text-center">
+        <div class="col align-self-center">
+          <button type="button" class="btn btn-secondary load-more">
+            Load more
+          </button>
+        </div>
       </div>
     </div>
-    <script type="module" src="./index.js"></script>
-    <!-- <div class="grid text-center">
-      <div class="g-col-6 g-col-md-4">.g-col-6 .g-col-md-4</div>
-      <div class="g-col-6 g-col-md-4">.g-col-6 .g-col-md-4</div>
-      <div class="g-col-6 g-col-md-4">.g-col-6 .g-col-md-4</div>
-    </div> -->
+
+    <script type="module" src="./js/index.js"></script>
   </body>
 </html>
