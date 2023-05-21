@@ -1,4 +1,5 @@
 import SimpleLightbox from 'simplelightbox';
+import { blockScroll, enableScroll } from './helpers';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 console.log('check');
@@ -31,14 +32,4 @@ export class ImgModal {
   set selector(newSelector) {
     this.#selector = newSelector;
   }
-}
-
-function blockScroll(el) {
-  el.style.height = '100%';
-  el.style.overflow = 'hidden';
-}
-
-function enableScroll(el) {
-  el.style.height = 'unset';
-  el.style.overflow = 'unset';
 }

@@ -1,4 +1,5 @@
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
+import { blockScroll, enableScroll } from './helpers';
 
 export class Spinner {
   show() {
@@ -10,14 +11,4 @@ export class Spinner {
     Loading.remove();
     enableScroll(document.body);
   }
-}
-
-function blockScroll(el) {
-  el.style.height = '100%';
-  el.style.overflow = 'hidden';
-}
-
-function enableScroll(el) {
-  el.style.height = 'unset';
-  el.style.overflow = 'unset';
 }
