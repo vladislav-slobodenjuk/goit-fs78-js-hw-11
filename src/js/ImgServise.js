@@ -1,17 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = 'https://pixabay.com/api/';
-const params = {
-  key: '24000598-4cbb5e18617bf8e66757f824b',
-  image_type: 'photo',
-  orientation: 'horizontal',
-  safesearch: true,
-  per_page: 40,
-};
-
-axios.defaults.baseURL = BASE_URL;
-axios.defaults.params = params;
-// axios.defaults.timeout = 2500;
+import { pixabayInst } from './apiService';
 
 export class ImgService {
   #searchQuery;
@@ -22,7 +9,7 @@ export class ImgService {
 
   async getImages() {
     const params = { q: this.#searchQuery, page: this.page };
-    const { data } = await axios.get('', { params });
+    const { data } = await pixabayInst.get('', { params });
     // this.incrementPage();
     return data;
   }

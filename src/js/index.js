@@ -1,19 +1,17 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import SimpleLightbox from 'simplelightbox';
 import debounce from 'lodash.debounce';
 
 import { refs } from './refs';
 import { ImgService } from './ImgServise';
+import { ImgModal } from './imgModal';
 import { createGalleryMarkup } from './createGalleryMarkup';
 import { Spinner } from './Spinner';
-
-import 'simplelightbox/dist/simple-lightbox.min.css';
 
 // const { formEl, loadMoreBtn, galleryEl } = refs;
 const { formEl, galleryEl } = refs;
 const imgService = new ImgService();
 const spinner = new Spinner();
-let modal;
+const imgModal = new ImgModal('.gallery .gallery__link');
 
 formEl.addEventListener('submit', onSubmit);
 window.addEventListener('scroll', debounce(handleScroll, 100));
@@ -48,15 +46,7 @@ async function handleGallery() {
     updateGallery(galleryMarkup);
     imgService.incrementPage();
 
-    if (!modal) {
-      modal = new SimpleLightbox('.gallery .gallery__link');
-      modal.on('show.simplelightbox', () => blockScroll(document.body));
-      modal.on('close.simplelightbox', () => enableScroll(document.body));
-    } else {
-      modal.refresh();
-      modal.on('show.simplelightbox', () => blockScroll(document.body));
-      modal.on('close.simplelightbox', () => enableScroll(document.body));
-    }
+    imgModal.handle();
 
     spinner.hide();
     //
