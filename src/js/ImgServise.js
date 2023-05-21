@@ -6,8 +6,7 @@ const params = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  per_page: 200,
-  //set to 40
+  per_page: 40,
 };
 
 axios.defaults.baseURL = BASE_URL;
@@ -24,7 +23,7 @@ export class ImgService {
   async getImages() {
     const params = { q: this.#searchQuery, page: this.page };
     const { data } = await axios.get('', { params });
-    this.incrementPage();
+    // this.incrementPage();
     return data;
   }
 

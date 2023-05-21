@@ -1,21 +1,18 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import SimpleLightbox from 'simplelightbox';
 import debounce from 'lodash.debounce';
 
+import { refs } from './refs';
 import { ImgService } from './ImgServise';
+import { createGalleryMarkup } from './createGalleryMarkup';
+import { Spinner } from './Spinner';
 
 import 'simplelightbox/dist/simple-lightbox.min.css';
-
-const refs = {
-  formEl: document.getElementById('search-form'),
-  loadMoreBtn: document.querySelector('.load-more'),
-  galleryEl: document.querySelector('.gallery'),
-};
 
 // const { formEl, loadMoreBtn, galleryEl } = refs;
 const { formEl, galleryEl } = refs;
 const imgService = new ImgService();
+const spinner = new Spinner();
 let modal;
 
 formEl.addEventListener('submit', onSubmit);
@@ -36,23 +33,23 @@ function onSubmit(e) {
 
 async function handleGallery() {
   try {
-    Loading.pulse();
-    blockScroll(document.body);
-
+    spinner.show();
     const { hits, totalHits } = await imgService.getImages();
-    if (hits.length === 0 && imgService.page >= 3)
+
+    if (hits.length === 0 && imgService.page > 1)
       throw new Error('end of list');
+
     if (hits.length === 0) throw new Error('empty result');
-    if (imgService.page === 2)
+
+    if (imgService.page === 1 && hits.length !== 0)
       Notify.success(`Hooray! We found ${totalHits} images.`);
 
-    const markup = createMarkup(hits);
-    updateGallery(markup);
+    const galleryMarkup = createGalleryMarkup(hits);
+    updateGallery(galleryMarkup);
+    imgService.incrementPage();
 
     if (!modal) {
-      modal = new SimpleLightbox('.gallery .gallery__link', {
-        overlayOpacity: 0.8,
-      });
+      modal = new SimpleLightbox('.gallery .gallery__link');
       modal.on('show.simplelightbox', () => blockScroll(document.body));
       modal.on('close.simplelightbox', () => enableScroll(document.body));
     } else {
@@ -61,16 +58,11 @@ async function handleGallery() {
       modal.on('close.simplelightbox', () => enableScroll(document.body));
     }
 
-    Loading.remove();
-    enableScroll(document.body);
+    spinner.hide();
+    //
   } catch (error) {
-    console.log(error.message);
-    Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-    // if (error.code === 'ERR_BAD_REQUEST') console.log('catched bad req');
-    Loading.remove();
-    enableScroll(document.body);
+    onError(error);
+    spinner.hide();
   }
 }
 
@@ -80,6 +72,28 @@ function clearGallery() {
 
 function updateGallery(markup) {
   galleryEl.insertAdjacentHTML('beforeend', markup);
+}
+
+function onError(err) {
+  // console.log(err);
+  switch (err.message) {
+    case 'empty result':
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      break;
+
+    case 'end of list':
+    case 'Request failed with status code 400':
+      Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+      );
+      break;
+
+    default:
+      console.log(err.message);
+      break;
+  }
 }
 
 // function loadMore() {
@@ -98,66 +112,6 @@ function handleScroll() {
   if (scrollTop + clientHeight >= scrollHeight - 5) {
     handleGallery();
   }
-}
-
-async function fetchImages() {
-  try {
-    const images = await imgService.getImages();
-    if (images.length === 0) throw new Error('empty result');
-
-    return images;
-    //
-  } catch (error) {
-    console.log(error);
-    // return console.log('Empty array');
-  }
-}
-
-function createMarkup(items) {
-  return items
-    .map(item => {
-      const {
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      } = item;
-      return `<div class="col">
-                <div class="card photo-card">
-                  <a class="gallery__link" href=${largeImageURL}>
-                    <img
-                      src=${webformatURL.replace('_640', '_340')}
-                      alt='${tags}'
-                      class="card-img-top object-fit-cover"
-                      loading="lazy"
-                      style="height: 200px;"
-                    />
-                  </a>
-                  <div class="info card-body d-flex justify-content-between p-2">
-                    <p class="info-item card-text small m-0">
-                      <b>Likes</b>
-                      ${likes}
-                    </p>
-                    <p class="info-item card-text small m-0">
-                      <b>Views</b>
-                      ${views}
-                    </p>
-                    <p class="info-item card-text small m-0">
-                      <b>Comments</b>
-                      ${comments}
-                    </p>
-                    <p class="info-item card-text small m-0">
-                      <b>Downloads</b>
-                      ${downloads}
-                    </p>
-                  </div>
-                </div>
-              </div>`;
-    })
-    .join('');
 }
 
 function blockScroll(el) {
