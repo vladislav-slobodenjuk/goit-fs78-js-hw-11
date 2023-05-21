@@ -1,5 +1,8 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import SimpleLightbox from 'simplelightbox';
+import debounce from 'lodash.debounce';
+
 import { ImgService } from './ImgServise';
 
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -16,8 +19,8 @@ const imgService = new ImgService();
 let modal;
 
 formEl.addEventListener('submit', onSubmit);
+window.addEventListener('scroll', debounce(handleScroll, 100));
 // loadMoreBtn.addEventListener('click', loadMore);
-window.addEventListener('scroll', handleScroll);
 
 function onSubmit(e) {
   e.preventDefault();
@@ -33,7 +36,12 @@ function onSubmit(e) {
 
 async function handleGallery() {
   try {
+    Loading.pulse();
+    blockScroll(document.body);
+
     const { hits, totalHits } = await imgService.getImages();
+    if (hits.length === 0 && imgService.page >= 3)
+      throw new Error('end of list');
     if (hits.length === 0) throw new Error('empty result');
     if (imgService.page === 2)
       Notify.success(`Hooray! We found ${totalHits} images.`);
@@ -48,12 +56,17 @@ async function handleGallery() {
     } else {
       modal.refresh();
     }
+
+    Loading.remove();
+    enableScroll(document.body);
   } catch (error) {
     console.log(error.message);
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
     // if (error.code === 'ERR_BAD_REQUEST') console.log('catched bad req');
+    Loading.remove();
+    enableScroll(document.body);
   }
 }
 
@@ -112,7 +125,7 @@ function createMarkup(items) {
                 <div class="card photo-card">
                   <a class="gallery__link" href=${largeImageURL}>
                     <img
-                      src=${webformatURL}
+                      src=${webformatURL.replace('_640', '_340')}
                       alt='${tags}'
                       class="card-img-top object-fit-cover"
                       loading="lazy"
@@ -141,4 +154,14 @@ function createMarkup(items) {
               </div>`;
     })
     .join('');
+}
+
+function blockScroll(el) {
+  el.style.height = '100%';
+  el.style.overflow = 'hidden';
+}
+
+function enableScroll(el) {
+  el.style.height = 'unset';
+  el.style.overflow = 'unset';
 }

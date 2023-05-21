@@ -6,12 +6,13 @@ const params = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  per_page: 40,
+  per_page: 200,
+  //set to 40
 };
 
 axios.defaults.baseURL = BASE_URL;
 axios.defaults.params = params;
-axios.defaults.timeout = 2500;
+// axios.defaults.timeout = 2500;
 
 export class ImgService {
   #searchQuery;
