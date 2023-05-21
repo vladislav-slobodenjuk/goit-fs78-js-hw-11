@@ -53,8 +53,12 @@ async function handleGallery() {
       modal = new SimpleLightbox('.gallery .gallery__link', {
         overlayOpacity: 0.8,
       });
+      modal.on('show.simplelightbox', () => blockScroll(document.body));
+      modal.on('close.simplelightbox', () => enableScroll(document.body));
     } else {
       modal.refresh();
+      modal.on('show.simplelightbox', () => blockScroll(document.body));
+      modal.on('close.simplelightbox', () => enableScroll(document.body));
     }
 
     Loading.remove();
