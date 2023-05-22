@@ -2,7 +2,7 @@ import debounce from 'lodash.debounce';
 
 import { refs } from './refs';
 import { ImgService } from './ImgServise';
-import { ImgModal } from './imgModal';
+import { ImgModal } from './ImgModal';
 import { createGalleryMarkup } from './createGalleryMarkup';
 import { Spinner } from './Spinner';
 import {
