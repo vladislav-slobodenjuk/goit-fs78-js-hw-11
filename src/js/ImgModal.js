@@ -2,8 +2,6 @@ import SimpleLightbox from 'simplelightbox';
 import { blockScroll, enableScroll } from './helpers';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-console.log('check');
-
 export class ImgModal {
   #selector;
   constructor(selector) {
