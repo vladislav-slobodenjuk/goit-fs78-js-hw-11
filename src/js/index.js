@@ -13,45 +13,50 @@ import {
 } from './notifications';
 
 // const { formEl, loadMoreBtn, galleryEl } = refs;
-const { formEl, galleryEl } = refs;
+const { formEl, inputEl, galleryEl } = refs;
 const imgService = new ImgService();
 const spinner = new Spinner();
 const imgModal = new ImgModal('.gallery .gallery__link');
 
+const debouncedScroll = debounce(handleScroll, 100);
+
 formEl.addEventListener('submit', onSubmit);
-window.addEventListener('scroll', debounce(handleScroll, 100));
+// window.addEventListener('scroll', debounce(handleScroll, 100));
 // loadMoreBtn.addEventListener('click', loadMore);
 
 function onSubmit(e) {
   e.preventDefault();
   const value = e.target.elements.searchQuery.value.trim();
   if (value.length === 0) return notifyEmptyQuery();
+  inputEl.blur();
 
   imgService.searchQuery = value;
-  imgService.resetPage();
+  imgService.resetPages();
   clearGallery();
+
+  window.addEventListener('scroll', debouncedScroll);
 
   handleGallery().finally(e.target.reset());
 }
 
 async function handleGallery() {
   try {
+    if (imgService.page > imgService.totalPages) {
+      window.removeEventListener('scroll', debouncedScroll);
+      throw new Error('end of list');
+    }
+
     spinner.show();
     const { hits, totalHits } = await imgService.getImages();
 
-    if (hits.length === 0 && imgService.page > 1)
-      throw new Error('end of list');
-
     if (hits.length === 0) throw new Error('empty result');
-
     if (imgService.page === 1 && hits.length !== 0) notifySuccess(totalHits);
 
     const galleryMarkup = createGalleryMarkup(hits);
     updateGallery(galleryMarkup);
+
     imgService.incrementPage();
-
     imgModal.handle();
-
     spinner.hide();
     //
   } catch (error) {

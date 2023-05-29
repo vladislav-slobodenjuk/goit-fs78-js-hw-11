@@ -4,13 +4,15 @@ export class ImgService {
   #searchQuery;
   constructor() {
     this.page = 1;
+    this.totalPages = 1;
     this.#searchQuery = '';
   }
 
   async getImages() {
     const params = { q: this.#searchQuery, page: this.page };
     const { data } = await pixabayInst.get('', { params });
-    // this.incrementPage();
+
+    this.totalPages = Math.ceil(data.totalHits / 40);
     return data;
   }
 
@@ -22,8 +24,9 @@ export class ImgService {
     this.#searchQuery = newQuery;
   }
 
-  resetPage() {
+  resetPages() {
     this.page = 1;
+    this.totalPages = 1;
   }
 
   incrementPage() {

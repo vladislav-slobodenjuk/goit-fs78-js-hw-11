@@ -22,19 +22,19 @@ export function createGalleryMarkup(items) {
                     />
                   </a>
                   <div class="info card-body d-flex justify-content-between p-2">
-                    <p class="info-item card-text small m-0">
+                    <p class="info-item card-text small m-0 d-flex flex-column">
                       <b>Likes</b>
                       ${likes}
                     </p>
-                    <p class="info-item card-text small m-0">
+                    <p class="info-item card-text small m-0 d-flex flex-column">
                       <b>Views</b>
                       ${views}
                     </p>
-                    <p class="info-item card-text small m-0">
+                    <p class="info-item card-text small m-0 d-flex flex-column">
                       <b>Comments</b>
                       ${comments}
                     </p>
-                    <p class="info-item card-text small m-0">
+                    <p class="info-item card-text small m-0 d-flex flex-column">
                       <b>Downloads</b>
                       ${downloads}
                     </p>
